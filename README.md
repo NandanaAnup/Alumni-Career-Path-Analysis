@@ -86,6 +86,108 @@ Organization IS NOT NULL AND  Designation IS NOT NULL AND Location IS NOT NULL;
 
 SELECT * FROM college_b_sj_v;
 ```
+### 9. Make procedure to use string function/s for converting record of Name, FatherName, MotherName into lower case for views (College_A_HS_V, College_A_SE_V, College_A_SJ_V, College_B_HS_V, College_B_SE_V, College_B_SJ_V) 
+```MySql
+DELIMITER $$
+CREATE PROCEDURE LowerCase ()
+BEGIN
+SELECT LOWER(Name) Name , LOWER(FatherName) FatherName, LOWER(MotherName) MotherName FROM college_a_hs;
+SELECT LOWER(Name) Name, LOWER(FatherName) FatherName, LOWER(MotherName) MotherName FROM college_a_se;
+SELECT LOWER(Name) Name, LOWER(FatherName) FatherName, LOWER(MotherName) MotherName FROM college_a_sj;
+SELECT LOWER(Name) Name, LOWER(FatherName) FatherName, LOWER(MotherName) MotherName FROM college_b_hs;
+SELECT LOWER(Name) Name, LOWER(FatherName) FatherName, LOWER(MotherName) MotherName FROM college_b_se;
+SELECT LOWER(Name) Name, LOWER(FatherName) FatherName, LOWER(MotherName) MotherFather FROM college_b_sj;
+END $$
+DELIMITER ;
+
+CALL LowerCase();
+```
+### 10. Write a query to create procedure get_name_collegeA using the cursor to fetch names of all students from college A.
+```MySql
+DELIMITER $$
+CREATE PROCEDURE get_name_collegeA (
+INOUT getnameA TEXT(40000)   )
+BEGIN
+     DECLARE finished INT DEFAULT 0;
+     DECLARE getnamelistA VARCHAR(16000) DEFAULT "" ;
+     
+     DECLARE getnamedetailA 
+            CURSOR FOR
+                 SELECT Name from college_a_hs UNION SELECT Name from college_a_se UNION 
+				 SELECT Name from college_a_sj;
+                 
+	 DECLARE CONTINUE HANDLER 
+     FOR NOT FOUND SET finished = 1;
+     
+     OPEN getnamedetailA;
+     
+     getloop:
+     LOOP
+		FETCH getnamedetailA INTO getnamelistA;
+        IF finished = 1 THEN
+            LEAVE getloop;
+		END IF;
+        SET getnameA = CONCAT(getnamelistA," ; ",getnameA);
+		END LOOP getloop;
+        CLOSE getnamedetailA;
+END $$
+DELIMITER ;
+
+SET @getnameA = "";
+CALL get_name_collegeA(@getnameA);
+SELECT @getnameA NamesA;
+```
+### 11. Write a query to create procedure get_name_collegeB using the cursor to fetch names of all students from college B.
+```MySql
+DELIMITER $$
+CREATE PROCEDURE get_name_collegeB (
+INOUT getnameB TEXT(40000)   )
+BEGIN
+     DECLARE finished INT DEFAULT 0;
+     DECLARE getnamelistB VARCHAR(16000) DEFAULT "" ;
+     
+     DECLARE getnamedetailB 
+            CURSOR FOR
+                 SELECT Name from college_b_hs UNION SELECT Name from college_b_se UNION 
+				 SELECT Name from college_b_sj;
+                 
+	 DECLARE CONTINUE HANDLER 
+     FOR NOT FOUND SET finished = 1;
+     
+     OPEN getnamedetailB;
+     
+     getloop:
+     LOOP
+		FETCH getnamedetailB INTO getnamelistB;
+        IF finished = 1 THEN
+            LEAVE getloop;
+		END IF;
+        SET getnameB = CONCAT(getnamelistB," ; ",getnameB);
+		END LOOP getloop;
+        CLOSE getnamedetailB;
+END $$
+DELIMITER ;
+
+SET @getnameB = "";
+CALL get_name_collegeB(@getnameB);
+SELECT @getnameB NamesB;
+```
+### 12. Calculate the percentage of career choice of College A and College B Alumni-- (w.r.t Higher Studies, Self Employed and Service/Job)Note: Approximate percentages are considered for career choices.
+```MySql
+SELECT ('Higher Studies') 'Career_choice',(SELECT COUNT(*) FROM college_a_hs )/((SELECT COUNT(*)  FROM college_a_hs) + (SELECT COUNT(*)  FROM college_a_se)
++ (SELECT COUNT(*)  FROM college_a_sj))*100 'College_A_Percentage',
+(SELECT COUNT(*) FROM college_b_hs )/((SELECT COUNT(*)  FROM college_b_hs) + (SELECT COUNT(*)  FROM college_b_se)
++ (SELECT COUNT(*)  FROM college_b_sj))*100 'College_B_Percentage' UNION 
+SELECT 'Self_Employed',(SELECT COUNT(*) FROM college_a_se )/((SELECT COUNT(*)  FROM college_a_hs) + (SELECT COUNT(*)  FROM college_a_se)
++ (SELECT COUNT(*)  FROM college_a_sj))*100 'College_A_Percentage',
+(SELECT COUNT(*) FROM college_b_se )/((SELECT COUNT(*)  FROM college_b_hs) + (SELECT COUNT(*)  FROM college_b_se)
++ (SELECT COUNT(*)  FROM college_b_sj))*100 'College_B_Percentage'UNION
+SELECT 'Service Jobs',(SELECT COUNT(*) FROM college_a_sj )/((SELECT COUNT(*)  FROM college_a_hs) + (SELECT COUNT(*)  FROM college_a_se)
++ (SELECT COUNT(*)  FROM college_a_sj))*100 'College_A_Percentage',
+(SELECT COUNT(*) FROM college_b_sj )/((SELECT COUNT(*)  FROM college_b_hs) + (SELECT COUNT(*)  FROM college_b_se)
++ (SELECT COUNT(*)  FROM college_b_sj))*100 'College_B_Percentage';
+```
+# 📖 Conclusion
 
 
 
