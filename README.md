@@ -188,7 +188,7 @@ SELECT 'Service Jobs',(SELECT COUNT(*) FROM college_a_sj )/((SELECT COUNT(*)  FR
 + (SELECT COUNT(*)  FROM college_b_sj))*100 'College_B_Percentage';
 ```
 # 📖 Conclusion
-
+This project highlights my ability to apply SQL for real-world alumni career data analysis, including schema design, data cleaning, string manipulation, and cursor-based procedures. By calculating and comparing career choice percentages between two colleges, it demonstrates structured problem-solving, advanced query handling, and the skill to transform data into meaningful insights.
 
 
 
